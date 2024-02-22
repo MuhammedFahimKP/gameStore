@@ -1,21 +1,23 @@
 
 import useData from "./useData";
-import { Genre,Game,Platform } from "../types";
+import { Game,GameQuery } from "../types";
 
 
 
 
   
 
-const useGames = (selectedGenre:Genre|null,selectedPlatform:Platform|null) => useData<Game>(
+const useGames = (gameQuery:GameQuery) => useData<Game>(
     "\games",
     { 
         params:{
-            genres:selectedGenre?.id,
-            platforms:selectedPlatform?.id 
+            genres:gameQuery.genre?.id,
+            platforms:gameQuery.platform?.id,
+            ordering: gameQuery.sortOrder,
+            search:gameQuery.searchText
         } 
     },
-    [selectedGenre?.id,selectedPlatform?.id]
+    [gameQuery]
 );
 
 export default useGames
