@@ -1,17 +1,13 @@
 
 import useData from "./useData";
-interface Genre{
-
-    id:number;
-    name:string;
-    image_background:string;
-
-}
+import { Genre } from "../types";
 
 
 
 
 
-const useGenres = () => useData<Genre>('/genres');
+
+
+const useGenres = () => useData<Genre>('\genres');
 
 export default useGenres;
