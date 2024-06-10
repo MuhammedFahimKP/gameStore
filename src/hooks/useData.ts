@@ -1,50 +1,45 @@
-import { useEffect,useState } from "react";
-import apiClient ,{CanceledError,AxiosError }  from "../services/api-client";
+import { useEffect, useState } from "react";
+import apiClient, { CanceledError, AxiosError } from "../services/api-client";
 import { AxiosRequestConfig } from "axios";
 
+import type { FetchRespones } from "../types";
 
+const useData = <T>(
+  endpoint: string,
+  requestConfig?: AxiosRequestConfig,
+  deps?: any[]
+) => {
+  const [data, setData] = useState<T[]>([]);
+  const [error, setError] = useState("");
+  const [isLoading, setLoading] = useState(false);
 
+  useEffect(
+    () => {
+      const controller = new AbortController();
 
-interface FetchRespones<T>{
+      setLoading(true);
 
-    count:number;
-    results:T[];
-
-}
-
-
-const useData = <T>(endpoint:string,requestConfig ?:AxiosRequestConfig,deps?:any[]) =>{
-
-    const [data, setData] = useState<T[]>([]);
-    const [error, setError] = useState("");
-    const [isLoading,setLoading] = useState(false);
-    
-    useEffect(() => {
-        
-        
-        const controller = new AbortController();
-        
-        setLoading(true)
-       
-        apiClient
-        .get<FetchRespones<T>>(endpoint, { signal : controller.signal,...requestConfig })
-          .then((res) => { setData(res.data.results)
-            setLoading(false)
-            
+      apiClient
+        .get<FetchRespones<T>>(endpoint, {
+          signal: controller.signal,
+          ...requestConfig,
         })
-          .catch((err) => {
-            if (err instanceof CanceledError) return;
-            setError((err as AxiosError).message)
-            setLoading(false)
-          });
-          
-        
-        return  () => controller.abort();
+        .then((res) => {
+          setData(res.data.results);
+          setLoading(false);
+        })
+        .catch((err) => {
+          if (err instanceof CanceledError) return;
+          setError((err as AxiosError).message);
+          setLoading(false);
+        });
 
-      },deps ? [...deps] : []);
+      return () => controller.abort();
+    },
+    deps ? [...deps] : []
+  );
 
-    return { data , error , isLoading}
-    
-}
+  return { data, error, isLoading };
+};
 
 export default useData;
