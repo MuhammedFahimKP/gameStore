@@ -44,13 +44,11 @@ export default function useInfinitScrolleData<T>(
         params: { ...params, filters },
       };
     }
-    await setTimeout(async () => {
+    setTimeout(async () => {
       try {
         const res = await apiClient.get<FetchPaginatedResponse<T>>(
-          endpoint + `?page=${page}&page_size${limit}`,
-          {
-            ...requestConfiq,
-          }
+          endpoint,
+          reqConfig
         );
 
         setLoading(false);
